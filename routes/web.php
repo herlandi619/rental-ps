@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Customer\CustomerDashboardController;
+use App\Http\Controllers\Operator\OperatorActivityLogController;
 use App\Http\Controllers\Operator\OperatorBillingController;
 use App\Http\Controllers\Operator\OperatorBookingController;
 use App\Http\Controllers\Operator\OperatorDashboardController;
+use App\Http\Controllers\Operator\OperatorNotificationController;
+use App\Http\Controllers\Operator\OperatorProfileController;
 use App\Http\Controllers\Operator\OperatorPsController;
 use App\Http\Controllers\Operator\OperatorReportController;
 use App\Http\Controllers\Operator\OperatorTransactionController;
@@ -68,6 +71,19 @@ Route::middleware(['auth'])->prefix('operator')->name('operator.')->group(functi
     // 6.Menu Laporan
     Route::get('/reports', [OperatorReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/pdf', [OperatorReportController::class, 'exportPdf'])->name('reports.pdf');
+
+    // 7.Menu Notifikasi
+    Route::get('/notifications', [OperatorNotificationController::class, 'index'])->name('notifications.index');
+    Route::put('/notifications/{id}/read', [OperatorNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::put('/notifications/read-all', [OperatorNotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+
+    // 8.Menu Activity Log
+    Route::get('/activity-logs', [OperatorActivityLogController::class, 'index'])->name('activity-logs.index');
+
+    // 9.Menu Profil
+    Route::get('/profile', [OperatorProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [OperatorProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [OperatorProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 // PEMILIK
