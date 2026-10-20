@@ -1,6 +1,13 @@
 <?php
 
+use App\Http\Controllers\Customer\CustomerBookingController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
+use App\Http\Controllers\Customer\CustomerHistoryController;
+use App\Http\Controllers\Customer\CustomerNotificationController;
+use App\Http\Controllers\Customer\CustomerOrderController;
+use App\Http\Controllers\Customer\CustomerPaymentController;
+use App\Http\Controllers\Customer\CustomerProfileController;
+use App\Http\Controllers\Customer\CustomerPsController;
 use App\Http\Controllers\Operator\OperatorActivityLogController;
 use App\Http\Controllers\Operator\OperatorBillingController;
 use App\Http\Controllers\Operator\OperatorBookingController;
@@ -10,7 +17,14 @@ use App\Http\Controllers\Operator\OperatorProfileController;
 use App\Http\Controllers\Operator\OperatorPsController;
 use App\Http\Controllers\Operator\OperatorReportController;
 use App\Http\Controllers\Operator\OperatorTransactionController;
+use App\Http\Controllers\Pemilik\PemilikBookingController;
 use App\Http\Controllers\Pemilik\PemilikDashboardController;
+use App\Http\Controllers\Pemilik\PemilikMonitoringController;
+use App\Http\Controllers\Pemilik\PemilikNotificationController;
+use App\Http\Controllers\Pemilik\PemilikProfileController;
+use App\Http\Controllers\Pemilik\PemilikReportController;
+use App\Http\Controllers\Pemilik\PemilikStatisticController;
+use App\Http\Controllers\Pemilik\PemilikTransactionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -89,23 +103,80 @@ Route::middleware(['auth'])->prefix('operator')->name('operator.')->group(functi
 // PEMILIK
 Route::middleware(['auth'])->prefix('pemilik')->name('pemilik.')->group(function () {
     
-    // DASHBAORD
+    // 1.DASHBAORD
     // Menampilkan Dashboard, Statistik, dan Tabel Monitoring dalam 1 Halaman
     Route::get('/dashboard', [PemilikDashboardController::class, 'index'])->name('dashboard');
+
+    // 2.Rute Monitoring Pemilik
+    Route::get('/monitoring', [PemilikMonitoringController::class, 'index'])->name('monitoring.index');
+
+    // 3.Rute Monitoring Booking Pemilik
+    Route::get('/bookings', [PemilikBookingController::class, 'index'])->name('bookings.index');
+
+    // 4.Rute Transaksi Pemilik
+    Route::get('/transactions', [PemilikTransactionController::class, 'index'])->name('transactions.index');
+
+    // 5.Rute Laporan Pemilik
+    Route::get('/reports', [PemilikReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/pdf', [PemilikReportController::class, 'exportPdf'])->name('reports.pdf');
+
+    // 6.Rute Statistik Pemilik
+    Route::get('/statistics', [PemilikStatisticController::class, 'index'])->name('statistics.index');
+
+    // 7.Menu Notifikasi Pemilik
+    Route::get('/notifications', [PemilikNotificationController::class, 'index'])->name('notifications.index');
+    Route::put('/notifications/{id}/read', [PemilikNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::put('/notifications/read-all', [PemilikNotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+
+    // 8.Menu Profil
+    Route::get('/profile', [PemilikProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [PemilikProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [PemilikProfileController::class, 'updatePassword'])->name('profile.password');
     
 });
 
 // CUSTOMER
 Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(function () {
     
-    // DASHBOARd
+    // 1.DASHBOARd
     // Halaman utama Dashboard Customer (digabung dalam 1 controller)
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
     
     // Rute aksi untuk pembuatan booking baru melalui form modal
     Route::post('/booking/store', [CustomerDashboardController::class, 'storeBooking'])->name('booking.store');
+
+    // 2.Rute Daftar PS untuk Customer
+    // Route::get('/ps', [CustomerPsController::class, 'index'])->name('ps.index');
+
+    // 3.Rute Menu Booking Saya
+    Route::get('/bookings', [CustomerBookingController::class, 'index'])->name('bookings.index');
+    Route::put('/bookings/{id}/cancel', [CustomerBookingController::class, 'cancel'])->name('bookings.cancel');
+
+    // PAYMENT
+    // 7.Menu Pemesanan / Booking PS
+    Route::get('/pesan-ps', [CustomerOrderController::class, 'index'])->name('pesan-ps.index');
+    Route::post('/pesan-ps', [CustomerOrderController::class, 'store'])->name('pesan-ps.store');
+
+    // 8.Menu Pembayaran
+    Route::get('/payments', [CustomerPaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/booking/{booking}/pay', [CustomerPaymentController::class, 'pay'])->name('payments.pay');
+
+
+    // 4.Rute Riwayat Bermain
+    Route::get('/riwayat-bermain', [CustomerHistoryController::class, 'index'])->name('history.index');
+
+    // 5.Menu Notifikasi Customer
+    Route::get('/notifications', [CustomerNotificationController::class, 'index'])->name('notifications.index');
+    Route::put('/notifications/{id}/read', [CustomerNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::put('/notifications/read-all', [CustomerNotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+
+    // 6.Menu Profil
+    Route::get('/profile', [CustomerProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [CustomerProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('profile.password');
     
 });
+
 
 
 require __DIR__.'/auth.php';

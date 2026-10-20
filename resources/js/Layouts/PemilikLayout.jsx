@@ -2,14 +2,52 @@ import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 
 export default function PemilikLayout({ children }) {
-    const { auth } = usePage().props;
+    const { auth, unread_notifications_count } = usePage().props;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    // Daftar Menu untuk Role Pemilik berdasarkan modul sistem
+    // Daftar Menu untuk Role Pemilik dengan ikon yang disesuaikan
     const menuItems = [
-        { name: 'Dashboard', route: 'pemilik.dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-       
+        { 
+            name: 'Dashboard', 
+            route: 'pemilik.dashboard', 
+            icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' 
+        },
+        { 
+            name: 'Monitoring', 
+            route: 'pemilik.monitoring.index', 
+            icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' 
+        },
+        { 
+            name: 'Booking', 
+            route: 'pemilik.bookings.index', 
+            icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' 
+        },
+        { 
+            name: 'Transactions', 
+            route: 'pemilik.transactions.index', 
+            icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' 
+        },
+        { 
+            name: 'Report', 
+            route: 'pemilik.reports.index', 
+            icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' 
+        },
+        { 
+            name: 'Notifications', 
+            route: 'pemilik.notifications.index', 
+            icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' 
+        },
+        { 
+            name: 'Statistics', 
+            route: 'pemilik.statistics.index', 
+            icon: 'M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z' 
+        },
+        { 
+            name: 'Profile', 
+            route: 'pemilik.profile.index', 
+            icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' 
+        },
     ];
 
     return (
@@ -34,17 +72,16 @@ export default function PemilikLayout({ children }) {
                     </p>
                     <nav className="space-y-1">
                         {menuItems.map((item, index) => {
-                            // Cek apakah route saat ini aktif
-                            // const isActive = route().current(item.route); // Gunakan ini jika Ziggy terpasang
-                            const isActive = false; // Hapus ini jika menggunakan Ziggy di atas
+                            // Cek rute aktif menggunakan Ziggy (route().current())
+                            const isActive = route().current(item.route) || route().current(item.route.replace('.index', '.*'));
 
                             return (
                                 <Link
                                     key={index}
-                                    href={route(item.route)} // Pastikan route ini sudah Anda buat di web.php
+                                    href={route(item.route)}
                                     className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
                                         isActive 
-                                        ? 'bg-blue-600 text-white' 
+                                        ? 'bg-blue-600 text-white shadow-md' 
                                         : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                                     }`}
                                 >
@@ -80,13 +117,21 @@ export default function PemilikLayout({ children }) {
                     </div>
 
                     <div className="flex items-center space-x-4">
-                        {/* Tombol Notifikasi */}
-                        <button className="text-gray-400 hover:text-blue-500 transition-colors relative">
-                            <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                        {/* Tombol Notifikasi dengan Badge Dinamis */}
+                        <Link 
+                            href={route('pemilik.notifications.index')} 
+                            className="text-gray-400 hover:text-blue-500 transition-colors relative focus:outline-none"
+                            title="Lihat Notifikasi"
+                        >
+                            {unread_notifications_count > 0 && (
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
+                                    {unread_notifications_count > 99 ? '99+' : unread_notifications_count}
+                                </span>
+                            )}
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
-                        </button>
+                        </Link>
 
                         {/* Profil Dropdown */}
                         <div className="relative">
@@ -95,7 +140,7 @@ export default function PemilikLayout({ children }) {
                                 className="flex items-center space-x-2 focus:outline-none"
                             >
                                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                                    {auth.user?.name ? auth.user.name.charAt(0).toUpperCase() : 'O'}
+                                    {auth.user?.name ? auth.user.name.charAt(0).toUpperCase() : 'P'}
                                 </div>
                                 <span className="text-sm font-medium text-gray-700 hidden sm:block">
                                     {auth.user?.name || 'Pemilik'}
@@ -112,7 +157,7 @@ export default function PemilikLayout({ children }) {
                                         <p className="text-sm font-medium text-gray-900">{auth.user?.name}</p>
                                         <p className="text-xs text-gray-500 truncate">{auth.user?.email}</p>
                                     </div>
-                                    <Link href={route('profile.edit')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <Link href={route('pemilik.profile.index')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                         Profil Saya
                                     </Link>
                                     <Link href={route('logout')} method="post" as="button" className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors">
@@ -124,7 +169,7 @@ export default function PemilikLayout({ children }) {
                     </div>
                 </header>
 
-                {/* Main Content (Disini children dari halaman-halaman akan di-render) */}
+                {/* Main Content */}
                 <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50">
                     {children}
                 </main>
